@@ -2,6 +2,7 @@
 import streamlit as st
 import pandas as pd
 import joblib
+from pathlib import Path
 
 st.set_page_config(
     page_title="House Price Prediction",
@@ -13,9 +14,19 @@ st.set_page_config(
 # LOAD TRAINED MODEL
 # ==========================================
 
+# Get the directory where app.py is located
+BASE_DIR = Path(__file__).resolve().parent
+
+# Construct the absolute path to the model
+MODEL_PATH = BASE_DIR / "best_housing_price_model.pkl"
+
 @st.cache_resource
 def load_model():
-    return joblib.load("best_housing_price_model.pkl")
+    if not MODEL_PATH.exists():
+        st.error(f"Model file not found at: {MODEL_PATH}")
+        st.stop()
+
+    return joblib.load(MODEL_PATH)
 
 model = load_model()
 
